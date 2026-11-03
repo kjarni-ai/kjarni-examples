@@ -1874,9 +1874,9 @@ checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 
 [[package]]
 name = "kjarni"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e20eedd8d7df99612bdd5e202bdb0d9a6dd7bfc2bb082eb4d34342a716c784fa"
+checksum = "b8dd29c60806a8dac3bd5da2ffbef7706e17446749e223c7baf502678d5f4495"
 dependencies = [
  "anyhow",
  "config",
@@ -1902,9 +1902,9 @@ dependencies = [
 
 [[package]]
 name = "kjarni-models"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1218d4aadfb2102b0047b6c587f34a737aabf9306da0706748e566b0f6cbaf4a"
+checksum = "2111cff930d31945e2bfbccea26771feb02c754df82af5cc5368e97ea00ecc8d"
 dependencies = [
  "anyhow",
  "async-stream",
@@ -1937,9 +1937,9 @@ dependencies = [
 
 [[package]]
 name = "kjarni-rag"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8f2d54b0589c522b32589970990f3591105988c07094bcb692ea7af5ae613fc3"
+checksum = "1d668a9795e683217dc12e64cf955c6f3451fa0c47cbbcc4640c99355beca1a4"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1961,9 +1961,9 @@ dependencies = [
 
 [[package]]
 name = "kjarni-search"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "637a3448b4212f2687a0f8790f3fe20294a8cfd186a52d7356261bbfde5ed5bc"
+checksum = "ed32fd577f1cfeac3eab9cb1b7629e10cbc4c2d080dbe8290a5a4a99c329bc4a"
 dependencies = [
  "anyhow",
  "bincode",
@@ -1979,9 +1979,9 @@ dependencies = [
 
 [[package]]
 name = "kjarni-transformers"
-version = "0.4.1"
+version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b150113b97dc32c281bcc5d208756358ce41672d27bec23e1243f93f9083eebe"
+checksum = "55427a1c43f2514726fd07cbf2a90ea109d434ee3aa1840cde7934a0edf40b9d"
 dependencies = [
  "anyhow",
  "async-stream",
