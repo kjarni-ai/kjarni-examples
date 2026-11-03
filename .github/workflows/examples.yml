@@ -1,0 +1,86 @@
+# Builds and runs the examples against the published Kjarni packages, so a release
+# that breaks an example fails here rather than in a reader's terminal.
+name: Examples
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  csharp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
+        with:
+          dotnet-version: "8.0.x"
+      - name: Build every C# example
+        run: |
+          for d in image-search-csharp semantic-search-csharp local-llm-csharp sentiment-analysis-csharp; do
+            dotnet build "$d" -c Release
+          done
+      - name: Semantic search ranks the password question first
+        run: dotnet run --project semantic-search-csharp -c Release | tee out.txt && grep -A1 'query:' out.txt | grep -q 'reset my password'
+      - name: Sentiment classifies the first review as positive
+        run: dotnet run --project sentiment-analysis-csharp -c Release | tee out.txt && grep -q 'positive.*I love this product' out.txt
+
+  cpp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build and run the C++ example against the latest release
+        working-directory: cpp-semantic-search
+        run: |
+          curl -sL https://github.com/olafurjohannsson/kjarni/releases/latest/download/kjarni-x86_64-linux.tar.gz | tar xz
+          g++-14 -std=c++23 search.cpp -I. -L. -lkjarni_ffi -Wl,-rpath,'$ORIGIN' -o search
+          ./search | tee out.txt
+          sed -n 2p out.txt | grep -q 'reset my password'
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+      - name: Semantic search
+        run: |
+          pip install kjarni
+          python python-semantic-search/search.py | tee out.txt
+          sed -n 2p out.txt | grep -q 'reset my password'
+
+  go:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Semantic search
+        working-directory: go-semantic-search
+        run: |
+          go run . | tee out.txt
+          sed -n 2p out.txt | grep -q 'reset my password'
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Semantic search
+        working-directory: rust-semantic-search
+        run: |
+          cargo run --release | tee out.txt
+          sed -n 2p out.txt | grep -q 'reset my password'
+
+  cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Semantic search
+        working-directory: cli-semantic-search
+        run: |
+          curl -fsSL https://kjarni.ai/install.sh | sh
+          export PATH="$HOME/.local/bin:$PATH"
+          ./search.sh | tee out.txt
+          sed -n 2p out.txt | grep -q 'reset my password'

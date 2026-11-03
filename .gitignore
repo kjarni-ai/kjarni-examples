@@ -1,0 +1,10 @@
+bin/
+obj/
+build/
+kjarni-lib/
+*.kjimg
+cpp-semantic-search/kjarni*
+cpp-semantic-search/libkjarni_ffi.so
+cpp-semantic-search/search
+target/
+out.txt

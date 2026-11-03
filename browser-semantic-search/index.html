@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Semantic search in the browser with Kjarni</title>
+<style>
+  body { font: 15px/1.6 system-ui, sans-serif; margin: 40px auto; max-width: 640px; }
+  input { font: inherit; width: 100%; padding: 6px; box-sizing: border-box; }
+  pre { background: #f6f8fa; padding: 14px; border-radius: 8px; white-space: pre-wrap; }
+</style>
+
+<h1>Semantic search in the browser</h1>
+<p>An embedding model runs on this page. Nothing you type is sent anywhere.</p>
+<input id="q" value="I need to change my login credentials" disabled>
+<pre id="out">downloading the model (23 MB)…</pre>
+
+<script type="module">
+  import init, { WasmModel } from "https://cdn.jsdelivr.net/npm/kjarni-wasm@0.4.1/pkg/kjarni_wasm.js";
+
+  const docs = [
+    "How do I reset my password?",
+    "What is your refund policy?",
+    "Do you ship internationally?",
+    "How do I update my billing address?",
+    "Where can I track my order?",
+  ];
+
+  const out = document.getElementById("out");
+  const input = document.getElementById("q");
+
+  await init();
+  // all-MiniLM-L6-v2 with int8 weights, cached by the browser after the first visit.
+  const url = "https://huggingface.co/olafuraron/all-MiniLM-L6-v2-q8/resolve/main/all-MiniLM-L6-v2-q8.kjq";
+  const model = WasmModel.from_quantized(new Uint8Array(await (await fetch(url)).arrayBuffer()));
+
+  // Vectors come back normalised and flattened, so a dot product is the cosine similarity.
+  const docVecs = model.encode(docs, true);
+  const dim = docVecs.length / docs.length;
+
+  function search() {
+    const q = model.encode([input.value], true);
+    const scored = docs.map((doc, i) => {
+      let s = 0;
+      for (let k = 0; k < dim; k++) s += q[k] * docVecs[i * dim + k];
+      return [s, doc];
+    }).sort((a, b) => b[0] - a[0]);
+    out.textContent = `query: "${input.value}"\n` +
+      scored.map(([s, d]) => `  ${s.toFixed(4).padStart(7)}  ${d}`).join("\n");
+  }
+
+  input.disabled = false;
+  input.addEventListener("input", search);
+  search();
+</script>
